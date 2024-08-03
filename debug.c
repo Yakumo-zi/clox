@@ -28,6 +28,16 @@ static int constant_instrunction(const char *name, Chunk *chunk, int offset) {
   return offset + offset_pos;
 }
 
+int get_instrunction_line(Chunk *chunk, int idx) {
+  for (int i = 0; i < chunk->line_count; i++) {
+    int range = chunk->lines[i] >> 32;
+    if (idx <= range) {
+      return chunk->lines[i];
+    }
+  }
+  return -1;
+}
+
 void disassemble_chunk(Chunk *chunk, const char *name) {
   printf("==%s==\n", name);
   for (int offset = 0; offset < chunk->count;) {
@@ -36,10 +46,13 @@ void disassemble_chunk(Chunk *chunk, const char *name) {
 }
 int disassemble_instruction(Chunk *chunk, int offset) {
   printf("%04d ", offset);
-  if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
+  static int last_line = 0;
+  int line = get_instrunction_line(chunk, offset);
+  if (last_line == line) {
     printf("   | ");
   } else {
-    printf("%4d ", chunk->lines[offset]);
+    printf("%4d ", line);
+    last_line = line;
   }
   uint8_t instruction = chunk->code[offset];
   switch (instruction) {
