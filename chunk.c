@@ -1,7 +1,10 @@
 #include "chunk.h"
 #include "memmory.h"
+#include "utils.h"
 #include "value.h"
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 void init_chunk(Chunk *chunk) {
   chunk->count = 0;
@@ -23,6 +26,20 @@ void write_chunk(Chunk *chunk, uint8_t byte, int line) {
   chunk->code[chunk->count] = byte;
   chunk->lines[chunk->count] = line;
   chunk->count++;
+}
+
+void write_constant(Chunk *chunk, Value value, int line) {
+  int idx = add_constants(chunk, value);
+  if (idx < 255) {
+    write_chunk(chunk, OP_CONSTANT, line);
+    write_chunk(chunk, idx & 0xFF, line);
+  } else {
+    write_chunk(chunk, OP_CONSTANT_LONG, line);
+    for (int i = 0; i < 3; i++) {
+      write_chunk(chunk, idx & 0xFF, line);
+      idx >>= 8;
+    }
+  }
 }
 
 void free_chunk(Chunk *chunk) {
