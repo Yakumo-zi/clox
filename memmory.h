@@ -15,4 +15,5 @@
 #endif
 #define FREE_ARRAY(type, pointer, capacity)                                    \
   reallocate(pointer, sizeof(type) * capacity, 0)
+// TODO:use memory pool insted of malloc and realloc
 void *reallocate(void *pointer, size_t old_size, size_t new_size);
