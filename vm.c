@@ -24,9 +24,8 @@ InterpretResult run() {
 #define READ_CONSTANT_LONG(idx) (vm.chunk->constants.values[idx])
 #define BINARY_OP(op)                                                          \
     do {                                                                       \
-        double b = pop();                                                      \
-        double a = pop();                                                      \
-        push(a op b);                                                          \
+        *(vm.stack_top - 2) = ((*(vm.stack_top - 2)) op(*(vm.stack_top - 1))); \
+        vm.stack_top -= 1;                                                     \
     } while (false)
 
     for (;;) {
@@ -66,16 +65,20 @@ InterpretResult run() {
             push(constant_long);
             break;
         case OP_NEGATE:
-            *(vm.stack_top-1)=-(*(vm.stack_top-1));
+            *(vm.stack_top - 1) = -(*(vm.stack_top - 1));
             break;
         case OP_ADD:
-        BINARY_OP(+);break;
+            BINARY_OP(+);
+            break;
         case OP_SUB:
-        BINARY_OP(-);break;
+            BINARY_OP(-);
+            break;
         case OP_MUL:
-        BINARY_OP(*);break;
+            BINARY_OP(*);
+            break;
         case OP_DIV:
-        BINARY_OP(/);break;
+            BINARY_OP(/);
+            break;
         }
     }
 
