@@ -1,9 +1,8 @@
 #pragma once
 
-#include "common.h"
 #include "value.h"
 
-typedef enum { OP_RETURN, OP_CONSTANT, OP_CONSTANT_LONG, OP_NEGATE } OpCode;
+typedef enum { OP_RETURN, OP_CONSTANT, OP_CONSTANT_LONG,OP_ADD,OP_SUB,OP_MUL,OP_DIV, OP_NEGATE} OpCode;
 
 typedef struct {
   int count;

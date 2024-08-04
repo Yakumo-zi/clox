@@ -1,4 +1,5 @@
 #include "vm.h"
+#include "chunk.h"
 #include "debug.h"
 #include "value.h"
 #include <stdio.h>
@@ -21,6 +22,12 @@ InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG(idx) (vm.chunk->constants.values[idx])
+#define BINARY_OP(op)                                                          \
+    do {                                                                       \
+        double b = pop();                                                      \
+        double a = pop();                                                      \
+        push(a op b);                                                          \
+    } while (false)
 
     for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
@@ -52,16 +59,23 @@ InterpretResult run() {
             break;
         case OP_CONSTANT_LONG:
             // caculate long idx for constant
-            int idx = 0;
-            idx+=READ_BYTE();
-            idx+=READ_BYTE()<<8;
-            idx+=READ_BYTE()<<16;
+            int idx = READ_BYTE();
+            idx += READ_BYTE() << 8;
+            idx += READ_BYTE() << 16;
             Value constant_long = READ_CONSTANT_LONG(idx);
             push(constant_long);
             break;
         case OP_NEGATE:
             push(-pop());
             break;
+        case OP_ADD:
+        BINARY_OP(+);break;
+        case OP_SUB:
+        BINARY_OP(-);break;
+        case OP_MUL:
+        BINARY_OP(*);break;
+        case OP_DIV:
+        BINARY_OP(/);break;
         }
     }
 
