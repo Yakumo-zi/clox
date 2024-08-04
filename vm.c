@@ -2,6 +2,7 @@
 #include "chunk.h"
 #include "debug.h"
 #include "value.h"
+#include "compiler.h"
 #include <stdio.h>
 
 VM vm;
@@ -87,8 +88,7 @@ InterpretResult run() {
 #undef READ_CONSTANT_LONG
 }
 
-InterpretResult interpret(Chunk *chunk) {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
-    return run();
+InterpretResult interpret(const char* source) {
+    compile(source);
+    return INTERPRET_OK;
 }
