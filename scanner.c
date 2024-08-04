@@ -1,4 +1,5 @@
 #include "scanner.h"
+#include <ctype.h>
 #include <string.h>
 typedef struct {
     const char *start;
@@ -56,7 +57,7 @@ static char peek_next() {
     }
     return scanner.current[1];
 }
-void skip_white_space() {
+static void skip_white_space() {
     for (;;) {
         char c = peek();
         switch (c) {
@@ -83,14 +84,52 @@ void skip_white_space() {
         }
     }
 }
+static Token string() {
+    while (peek() != '"' && !is_at_end()) {
+        if (peek() == '\n')
+            scanner.line++;
+        advance();
+    }
+    if (is_at_end())
+        return error_token("Unterminated string.");
+    advance();
+    return make_token(TOKEN_STRING);
+}
 
+static Token number(){
+    while(isdigit(peek())){
+        advance();
+    }
+    if(peek()=='.' && isdigit(peek_next())){
+        advance();
+        while(isdigit(peek())){
+            advance();
+        }
+    }
+    return make_token(TOKEN_NUMBER);
+}
+static TokenType identifier_type(){
+    return TOKEN_IDENTIFIER;
+}
+static Token identifier(){
+    while (isalpha(peek()) || isdigit(peek())) {
+        advance(); 
+ 
+    }
+   return make_token(identifier_type());
+}
 Token scan_token() {
     skip_white_space();
     scanner.start = scanner.current;
     if (is_at_end())
         return make_token(TOKEN_EOF);
     char c = advance();
-
+    if(isalpha(c)){
+        return identifier();
+    }
+    if(isdigit(c)){
+        return number();
+    }
     switch (c) {
     case '(':
         return make_token(TOKEN_LEFT_PAREN);
@@ -122,6 +161,8 @@ Token scan_token() {
         return make_token(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
     case '=':
         return make_token(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
+    case '"':
+        return string();
     }
     return error_token("unexpected character.");
 }
