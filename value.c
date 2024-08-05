@@ -1,5 +1,5 @@
 #include "value.h"
-#include "memmory.h"
+#include "memory.h"
 #include <stdio.h>
 
 void init_value_array(ValueArray *array) {

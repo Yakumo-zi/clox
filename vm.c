@@ -1,8 +1,8 @@
 #include "vm.h"
 #include "chunk.h"
+#include "compiler.h"
 #include "debug.h"
 #include "value.h"
-#include "compiler.h"
 #include <stdio.h>
 
 VM vm;
@@ -42,6 +42,7 @@ InterpretResult run() {
 #endif
         uint8_t instrunction;
         switch (instrunction = READ_BYTE()) {
+
         case OP_RETURN:
 #ifdef DEBUG_TRACE_EXECUTION
             printf("          ");
@@ -88,7 +89,18 @@ InterpretResult run() {
 #undef READ_CONSTANT_LONG
 }
 
-InterpretResult interpret(const char* source) {
-    compile(source);
+InterpretResult interpret(const char *source) {
+    Chunk chunk;
+    init_chunk(&chunk);
+    
+    if(!compile(source,&chunk)){
+        free_chunk(&chunk);
+        return INTERPRET_COMPILER_ERROR;
+    }
+
+    // vm.chunk=&chunk;
+    // vm.ip=vm.chunk->code;
+    // InterpretResult result=run();
+    free_chunk(&chunk);
     return INTERPRET_OK;
 }

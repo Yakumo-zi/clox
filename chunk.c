@@ -1,5 +1,5 @@
 #include "chunk.h"
-#include "memmory.h"
+#include "memory.h"
 #include "value.h"
 #include <stdint.h>
 #include <stdio.h>

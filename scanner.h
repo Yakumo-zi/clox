@@ -29,4 +29,5 @@ typedef struct{
 } Token;
 
 void init_scanner(const char* source);
+char advance();
 Token scan_token();

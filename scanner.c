@@ -35,7 +35,7 @@ static Token error_token(const char *msg) {
     return tok;
 }
 
-static char advance() {
+char advance() {
     scanner.current++;
     // get last char,*(scanner.current-1)
     return scanner.current[-1];
@@ -117,7 +117,7 @@ static TokenType check_keyword(int start, int length, const char *rest,
     }
     return TOKEN_IDENTIFIER;
 }
-
+//trie check keyword
 static TokenType identifier_type() {
     switch (scanner.start[0]) {
     case 'a':
